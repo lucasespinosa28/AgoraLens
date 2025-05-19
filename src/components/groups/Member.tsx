@@ -34,7 +34,6 @@ export default function Member({ lensAddress }: { lensAddress: string }) {
                                 name={group.metadata.name}
                                 description={group.metadata.description}
                                 address={group.address}
-                                timestamp={group.timestamp}
                             />
                         ))}
                     </div>

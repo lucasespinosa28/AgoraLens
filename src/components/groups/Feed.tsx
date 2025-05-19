@@ -1,9 +1,26 @@
 import { useGroupFeed } from "@/hooks/useGroupFeed";
 import ContentDisplay from "@/components/ui/ContentDisplay";
 
+type Post = {
+  id: string;
+  author?: {
+    metadata?: {
+      name?: string;
+      picture?: string;
+    };
+  };
+  contentUri: string;
+};
+
+type GroupFeedData = {
+  posts?: {
+    items?: Post[];
+  };
+};
+
 export default function Feed({ feedAddress }: { feedAddress: string }) {
-  const { data: postsData, isLoading: isPostsLoading } = useGroupFeed(feedAddress);
-  const posts = postsData?.posts?.items ?? [];
+  const { data: postsData = {}, isLoading: isPostsLoading } = useGroupFeed(feedAddress) as { data: GroupFeedData; isLoading: boolean };
+  const posts = postsData.posts?.items ?? [];
   return (
     <div className="flex flex-col items-center justify-center w-full min-h-[60vh] bg-muted/40 py-8 px-2">
       {isPostsLoading && <p>Loading...</p>}

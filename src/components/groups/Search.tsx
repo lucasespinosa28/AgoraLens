@@ -74,7 +74,6 @@ export default function Search() {
                                 name={group.metadata.name}
                                 description={group.metadata.description}
                                 address={group.address}
-                                timestamp={group.timestamp}
                             />
                         ))}
                     </div>

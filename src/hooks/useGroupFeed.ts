@@ -1,6 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
 import { GraphQLClient, gql } from "graphql-request";
 
+type Post = {
+  author: {
+    metadata: {
+      name?: string;
+      picture?: string;
+    };
+    address: string;
+  };
+  timestamp: string;
+  id: string;
+  contentUri: string;
+};
+
+type GroupFeedResult = {
+  posts: {
+    pageInfo: {
+      next?: string | null;
+      prev?: string | null;
+    };
+    items: Post[];
+  };
+};
+
 const endpoint = "https://api.lens.xyz/graphql";
 const client = new GraphQLClient(endpoint);
 
@@ -29,7 +52,7 @@ const GROUP_FEED_QUERY = gql`
   }
 `;
 
-async function getGroupFeed(feedAddress: string, cursor: string | null = null) {
+async function getGroupFeed(feedAddress: string, cursor: string | null = null): Promise<GroupFeedResult> {
   const variables = {
     request: {
       pageSize: "TEN",
@@ -44,21 +67,24 @@ async function getGroupFeed(feedAddress: string, cursor: string | null = null) {
     },
   };
   const result = await client.request(GROUP_FEED_QUERY, variables);
-  if (!result?.posts) {
-    return { posts: { items: [] } };
+
+  // Defensive: ensure result is an object and has posts
+  if (typeof result !== "object" || result === null || !("posts" in result) || !result.posts) {
+    return { posts: { pageInfo: {}, items: [] } };
   }
-  if (!Array.isArray(result.posts.items)) {
-    result.posts.items = [];
-  }
-  return result;
+
+  const posts = result.posts as GroupFeedResult["posts"];
+  const items: Post[] = Array.isArray(posts?.items) ? posts.items : [];
+  const pageInfo: { next?: string | null; prev?: string | null } = typeof posts?.pageInfo === "object" && posts.pageInfo !== null ? posts.pageInfo : {};
+
+  return { posts: { pageInfo, items } };
 }
 
 export function useGroupFeed(feedAddress: string, cursor: string | null = null) {
-  const query = useQuery({
+  const query = useQuery<GroupFeedResult>({
     queryKey: ["GroupFeed", feedAddress, cursor],
     queryFn: () => getGroupFeed(feedAddress, cursor),
     enabled: !!feedAddress,
-    keepPreviousData: true,
   });
   return {
     ...query,

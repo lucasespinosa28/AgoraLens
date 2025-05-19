@@ -7,7 +7,7 @@ type Content = {
     locale?: string
     mainContentFocus?: string
     content?: string
-    image?: string
+    image?: string | { item?: string }
   }
   image?: string
   content?: string
