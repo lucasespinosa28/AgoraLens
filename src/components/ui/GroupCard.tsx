@@ -2,7 +2,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -22,19 +21,7 @@ function lensUriToHttp(uri: string) {
         : uri;
 }
 
-function formatTimestamp(ts: string) {
-    if (!ts) return "";
-    const d = new Date(ts);
-    return d.toLocaleString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
-}
-
-export default function GroupCard({icon, name, description, timestamp, address }: { icon: string, name: string, description: string, address: string, timestamp: string }) {
+export default function GroupCard({icon, name, description, address }: { icon: string, name: string, description: string, address: string }) {
     return (
         <Link key={address} to={"/group/" + address} className="block w-full">
             <Card className="flex flex-col gap-0 p-0 hover:shadow-lg transition-shadow">

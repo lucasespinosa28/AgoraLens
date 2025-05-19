@@ -9,25 +9,22 @@ import { ImageIcon } from "lucide-react";
 
 export default function SendPost({ feedAddress }: { feedAddress: string }) {
     const [content, setContent] = useState("");
-    const [metadataUri, setMetadataUri] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const { data: walletClient } = useWalletClient();
-    const { execute, loading, called, data: result } = useCreatePost(
+    const { execute, loading, data: result } = useCreatePost(
         handleOperationWith(walletClient)
     );
 
-    async function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError(null);
-        setMetadataUri(null);
 
         try {
             // 1. Create metadata
             const metadata = textOnly({ content });
             // 2. Upload metadata to storage using storageClient
             const { uri: uploadedUri } = await storageClient.uploadAsJson(metadata);
-            setMetadataUri(uploadedUri);
             // 3. Create the post on the custom feed using useCreatePost
             await execute({
                 contentUri: uri(uploadedUri),
@@ -35,8 +32,8 @@ export default function SendPost({ feedAddress }: { feedAddress: string }) {
             });
             // Reset form after successful post
             setContent("");
-        } catch (err: any) {
-            setError(err?.message || "Failed to post");
+        } catch (err) {
+            setError((err as Error)?.message || "Failed to post");
         }
     }
     console.log("result", result);

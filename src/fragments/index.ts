@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type { FragmentOf } from "@lens-protocol/client";
 import { AccountFragment, AccountMetadataFragment } from "./accounts";
 

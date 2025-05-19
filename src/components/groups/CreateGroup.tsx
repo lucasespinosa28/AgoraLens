@@ -15,7 +15,6 @@ export default function CreateGroup() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState<File | null>(null);
-  const [metadataUri, setMetadataUri] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [iconPreview, setIconPreview] = useState<string | null>(null);
 
@@ -62,7 +61,6 @@ export default function CreateGroup() {
       // Upload metadata as JSON
       console.log("Uploading metadata JSON...");
       const { uri: uploadedUri } = await storageClient.uploadAsJson(metadata, { acl });
-      setMetadataUri(uploadedUri);
       console.log("Metadata uploaded:", uploadedUri);
 
       // Create group on Lens
@@ -73,7 +71,7 @@ export default function CreateGroup() {
       if (result.isErr()) {
         console.error("Group creation failed:", result.error);
         setError(result.error && typeof result.error === "object" && "message" in result.error
-          ? (result.error as any).message || String(result.error)
+          ? ((result.error as { message?: string }).message || String(result.error))
           : String(result.error));
       } else {
         console.log("Group creation result:", result.value);
